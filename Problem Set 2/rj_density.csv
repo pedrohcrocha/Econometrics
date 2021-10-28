@@ -1,0 +1,108 @@
+"","mun","area.pon","density"
+"1","Angra dos Reis","3300100",205.45
+"2","Aperibé","3300159",107.92
+"3","Araruama","3300209",175.55
+"4","Areal","3300225",102.99
+"5","Armação dos Búzios","3300233",392.16
+"6","Arraial do Cabo","3300258",172.91
+"7","Barra do Piraí","3300308",163.7
+"8","Barra Mansa","3300407",324.94
+"9","Belford Roxo","3300456",6031.38
+"10","Bom Jardim","3300506",65.86
+"11","Bom Jesus do Itabapoana","3300605",59.13
+"12","Cabo Frio","3300704",453.75
+"13","Cachoeiras de Macacu","3300803",56.9
+"14","Cambuci","3300902",26.4
+"15","Carapebus","3300936",43.36
+"16","Comendador Levy Gasparian","3300951",76.53
+"17","Campos dos Goytacazes","3301009",115.16
+"18","Cantagalo","3301108",26.47
+"19","Cardoso Moreira","3301157",24.02
+"20","Carmo","3301207",54.15
+"21","Casimiro de Abreu","3301306",76.71
+"22","Conceição de Macabu","3301405",61.08
+"23","Cordeiro","3301504",175.59
+"24","Duas Barras","3301603",29.14
+"25","Duque de Caxias","3301702",1828.51
+"26","Engenheiro Paulo de Frontin","3301801",99.57
+"27","Guapimirim","3301850",142.7
+"28","Iguaba Grande","3301876",439.91
+"29","Itaboraí","3301900",506.55
+"30","Itaguaí","3302007",395.45
+"31","Italva","3302056",47.86
+"32","Itaocara","3302106",53.09
+"33","Itaperuna","3302205",86.71
+"34","Itatiaia","3302254",117.41
+"35","Japeri","3302270",1166.37
+"36","Laje do Muriaé","3302304",29.95
+"37","Macaé","3302403",169.89
+"38","Macuco","3302452",67.8
+"39","Magé","3302502",585.13
+"40","Mangaratiba","3302601",102.29
+"41","Maricá","3302700",351.55
+"42","Mendes","3302809",184.83
+"43","Mesquita","3302858",4310.48
+"44","Miguel Pereira","3302908",85.21
+"45","Miracema","3303005",88.15
+"46","Natividade","3303104",39
+"47","Nilópolis","3303203",8117.62
+"48","Niterói","3303302",3640.8
+"49","Nova Friburgo","3303401",195.07
+"50","Nova Iguaçu","3303500",1527.6
+"51","Paracambi","3303609",262.27
+"52","Paraíba do Sul","3303708",70.77
+"53","Paraty","3303807",40.57
+"54","Paty do Alferes","3303856",82.68
+"55","Petrópolis","3303906",371.85
+"56","Pinheiral","3303955",296.86
+"57","Piraí","3304003",52.07
+"58","Porciúncula","3304102",58.8
+"59","Porto Real","3304110",326.95
+"60","Quatis","3304128",44.72
+"61","Queimados","3304144",1822.6
+"62","Quissamã","3304151",28.4
+"63","Resende","3304201",109.35
+"64","Rio Bonito","3304300",121.7
+"65","Rio Claro","3304409",20.81
+"66","Rio das Flores","3304508",17.9
+"67","Rio das Ostras","3304524",461.38
+"68","Rio de Janeiro","3304557",5265.82
+"69","Santa Maria Madalena","3304607",12.67
+"70","Santo Antônio de Pádua","3304706",67.27
+"71","São Francisco de Itabapoana","3304755",36.84
+"72","São Fidélis","3304805",36.39
+"73","São Gonçalo","3304904",4035.9
+"74","São João da Barra","3305000",71.96
+"75","São João de Meriti","3305109",13024.56
+"76","São José de Ubá","3305133",27.98
+"77","São José do Vale do Rio Preto","3305158",91.87
+"78","São Pedro da Aldeia","3305208",264.05
+"79","São Sebastião do Alto","3305307",22.35
+"80","Sapucaia","3305406",32.35
+"81","Saquarema","3305505",209.96
+"82","Seropédica","3305554",275.53
+"83","Silva Jardim","3305604",22.77
+"84","Sumidouro","3305703",37.67
+"85","Tanguá","3305752",211.21
+"86","Teresópolis","3305802",212.49
+"87","Trajano de Moraes","3305901",17.44
+"88","Três Rios","3306008",237.42
+"89","Valença","3306107",55.06
+"90","Varre-Sai","3306156",49.85
+"91","Vassouras","3306206",63.94
+"92","Volta Redonda","3306305",1412.75
+"93",NA,NA,NA
+"94",NA,NA,NA
+"95","Notas:",NA,NA
+"96","Escolarização 6 a 14 anos : [população residente no município de 6 a 14 anos de idade matriculada no ensino regular/total de população residente no município de 6 a 14 anos de idade] x 100",NA,NA
+"97","População estimada: MOD_QUICK_FACTS_NOTA_POPESTIMADA_MUNICIPIO",NA,NA
+"98","Fontes:",NA,NA
+"99","Área Territorial: Área territorial brasileira 2020. Rio de Janeiro: IBGE, 2021",NA,NA
+"100","População estimada: IBGE, Diretoria de Pesquisas, Coordenação de População e Indicadores Sociais, Estimativas da população residente com data de referência 1o de julho de 2020",NA,NA
+"101","Densidade demográfica: IBGE, Censo Demográfico 2010, Área territorial brasileira. Rio de Janeiro: IBGE, 2011",NA,NA
+"102","Escolarização 6 a 14 anos : IBGE, Censo Demográfico 2010",NA,NA
+"103","IDHM Índice de desenvolvimento humano municipal : Programa das Nações Unidas para o Desenvolvimento - PNUD",NA,NA
+"104","Mortalidade infantil: Ministério da Saúde, Departamento de Informática do Sistema Único de Saúde - DATASUS 2017",NA,NA
+"105","Receitas realizadas: Contas anuais. Receitas orçamentárias realizadas (Anexo I-C) 2017 e Despesas orçamentárias empenhadas (Anexo I-D) 2017. In: Brasil. Secretaria do Tesouro Nacional, Siconfi: Sistema de Informações Contábeis e Fiscais do Setor Público Brasileiro. Brasília, DF, [2018]. Disponível em: https://siconfi.tesouro.gov.br/siconfi/pages/public/consulta_finbra/finbra_list.jsf. Acesso em: set. 2018",NA,NA
+"106","Despesas empenhadas: Contas anuais. Receitas orçamentárias realizadas (Anexo I-C) 2017 e Despesas orçamentárias empenhadas (Anexo I-D) 2017. In: Brasil. Secretaria do Tesouro Nacional, Siconfi: Sistema de Informações Contábeis e Fiscais do Setor Público Brasileiro. Brasília, DF, [2018]. Disponível em: https://siconfi.tesouro.gov.br/siconfi/pages/public/consulta_finbra/finbra_list.jsf. Acesso em: set. 2018",NA,NA
+"107","PIB per capita: IBGE, em parceria com os Órgãos Estaduais de Estatística, Secretarias Estaduais de Governo e Superintendência da Zona Franca de Manaus - SUFRAMA",NA,NA
