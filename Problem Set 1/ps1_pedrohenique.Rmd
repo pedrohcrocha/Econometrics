@@ -1,0 +1,220 @@
+---
+title: "Practical exercises"
+author: "Pedro Henrique Cavalcanti Rocha"
+date: "14/10/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(dplyr)
+knitr::opts_chunk$set(echo = TRUE)
+
+set.seed(42)
+education <- rpois(100, 10)
+hours_work <- rnorm(100, 8, 2)
+e <- rnorm(n = 100, mean = 0, sd = 20)
+base <- 10
+wage <- base + 15 * hours_work + 10 * education + e
+k <- rep(1, 100)
+df <- data.frame(wage, k, base, hours_work, education, e)
+X <- df %>% select(k, hours_work, education) %>% as.matrix()
+y <- df %>% select(wage) %>% as.matrix()
+beta_gmm <- solve((t(X)%*%X))%*%(t(X)%*%y)
+beta_gmm
+```
+
+## Question 5
+
+I've decided to use a fairly simple data structure with a very common problem in labor economics:
+```{r dataset}
+set.seed(42)
+education <- rpois(100, 10)
+hours_work <- rnorm(100, 8, 2)
+e <- rnorm(n = 100, mean = 0, sd = 20)
+base <- 10
+wage <- base + 15 * hours_work + 10 * education + e
+k <- rep(1, 100)
+df <- data.frame(wage, k, base, hours_work, education, e)
+saveRDS(df, file = "ps1_pedrohenrique.Rds")
+```
+
+## Question 6
+
+We are assuming that:
+
+$$ E[u|X] = 0 $$
+
+This implies that: 
+
+$$ E[X'u] = 0 $$
+
+Hence, we can use the moment equation 
+
+$$ E[X'(y - h(X,B)] = 0 $$
+
+Our hypothesis is that:
+
+$$ h(y, X,B) = XB$$
+
+i.e, a linear relationship between X and y
+
+Thus, we use: $$ E[X'(y - XB)] = 0 $$
+
+By question 4, we saw that: $$\hat{\beta}_{gmm} = (X'XWX'X)^{-1}(X'XWX'y)$$
+
+Our weighting matrix is going to be $(X'X)^-1$
+
+The estimation is pretty much straigthforward:
+
+```{r estimation}
+
+X <- df %>% select(k, hours_work, education) %>% as.matrix()
+y <- df %>% select(wage) %>% as.matrix()
+beta_gmm <- solve((t(X)%*%X))%*%(t(X)%*%y)
+beta_gmm
+```
+
+
+## Question 7
+
+We can use the additional condition $$E[xu^3] = 0$$
+
+The $h(y,X,\beta)$ function becomes: 
+
+$$ h(y,X,\beta) = \begin{bmatrix}
+   x(y - x'\beta) \\
+   x(y - x'\beta)^3        \\
+\end{bmatrix} $$
+
+The Jacobian matrix is given by:
+
+$$ \frac{dh(y,X,\beta)}{d\beta} = \begin{bmatrix}
+   -xx' \\
+   -3xx'(y - x'\beta)^2        \\
+\end{bmatrix} $$
+
+From which we can estimate:
+
+$$ \hat{G} = \begin{bmatrix}
+   -n^{-1}\sum_{i}^{n}x_ix_i' \\
+   -n^{-1}\sum_{i}^{n}3\hat{u_i}^3x_ix_i'        \\
+\end{bmatrix} $$
+
+We can estimate the variance-covariance matrix:
+
+$$ \hat{S} = \begin{bmatrix}
+    n^{-1} \sum_{i}^{n}{x_i x_i'\hat{u}_i^2}       & n^{-1} \sum_{i}^{n}{x_i x_i'\hat{u}_i^4} \\
+    n^{-1} \sum_{i}^{n}{x_i x_i'\hat{u}_i^4}        & n^{-1} \sum_{i}^{n}{x_i x_i'\hat{u}_i^6} \\
+\end{bmatrix} $$
+
+where $\hat{u} = y  - X\hat{\beta_{GMM}}$
+
+Given $\hat{G}$, $\hat{S}$ and W, we can obtain $\hat{V}_{\hat{\beta}_{GMM}}$:
+
+$$ \hat{V}_{\hat{\beta}_{GMM}} = n^{-1}(\hat{G}'W\hat{G})^{-1}(\hat{G}'W\hat{S}W\hat{G})(\hat{G}'W\hat{G})^{-1} $$
+
+```{r variance}
+# S Matrix
+n <- nrow(df)
+residuals_gmm_squared <-  (y - X%*%beta_gmm)^2 %>% as.vector()
+residuals_gmm_squared <- residuals_gmm_squared*diag(n)
+
+residuals_gmm_fourth <-  (y - X%*%beta_gmm)^4 %>% as.vector()
+residuals_gmm_fourth <- residuals_gmm_fourth*diag(n)
+
+residuals_gmm_sixth <-  (y - X%*%beta_gmm)^6 %>% as.vector()
+residuals_gmm_sixth <- residuals_gmm_sixth*diag(n)
+
+S_11 <- (t(X) %*% residuals_gmm_squared %*% X)/n
+S_12 <- (t(X) %*% residuals_gmm_fourth %*% X)/n
+S_21 <- S_12
+S_22 <- (t(X) %*% residuals_gmm_sixth %*% X)/n
+
+S_hat <- cbind(rbind(S_11, S_21), rbind(S_12, S_22)) %>% as.matrix()
+
+# G matrix
+residuals_gmm_squared <-  3*((y - X%*%beta_gmm)^2) %>% as.vector()
+residuals_gmm_squared <- residuals_gmm_squared*diag(n)
+
+G_hat_1 <- -(t(X) %*% X)/n 
+G_hat_2 <-  -(t(X) %*% residuals_gmm_squared %*% X)/n
+G_hat <- rbind(G_hat_1, G_hat_2)
+
+# Variance - Covariance Matrix
+V_hat_beta_hat_gmm <- (1/n) * (solve(t(G_hat)%*%diag(6)%*%G_hat) %*% (t(G_hat)%*%diag(6)%*%S_hat%*%diag(6)%*%G_hat) %*% solve(t(G_hat)%*%diag(6)%*%G_hat))
+V_hat_beta_hat_gmm
+```
+
+## Question 9
+
+The optimal weighting matrix is $W = \hat{S}^{-1}$ .The computation of this matrix requires a consistent estimator for $\beta$. In the previous question, we used $W = I$, which in turn yields the OLS estimator. Given our moments conditions, we know from previous results that the OLS estimator is consistent. So, without much work, we already have calculated the matrix $S$, but now we invert it to obtain the optimal weighting matrix $W^*$
+
+```{r optimal_weight}
+
+Q_n <- function(beta, W){
+    X <- df %>% select(k, hours_work, education) %>% as.matrix()
+    y <- df %>% select(wage) %>% as.matrix()
+    n <- nrow(df)
+    u <- y - X%*%beta
+    h_1 <- (t(X) %*% u)/n
+    h_2 <- (t(X) %*% u^3)/n
+    h <- as.matrix(rbind(h_1, h_2))
+    r <- t(h)%*%W%*%h
+    return(r)
+  }
+  
+W_star <- solve(S_hat)
+beta_ogmm <- optim(par = c(0,0,0), Q_n, method ="BFGS", W = W_star)
+beta_ogmm <- beta_ogmm$par
+beta_ogmm
+
+```
+
+## Question 10
+
+First, some of the parts of the variance:
+$$\tilde{G} = \begin{bmatrix}
+   \sum_{i}^{n}x_ix_i' \\
+   \sum_{i}^{n}\tilde{u_i}^3x_ix_i'        \\
+\end{bmatrix}$$
+
+
+$$\tilde{S} = \begin{bmatrix}
+    \sum_{i}^{n}{x_i x_i'\tilde{u}_i^2}       & \sum_{i}^{n}{x_i x_i'\tilde{u}_i^4} \\
+    \sum_{i}^{n}{x_i x_i'\tilde{u}_i^4}        & \sum_{i}^{n}{x_i x_i'\tilde{u}_i^6} \\
+\end{bmatrix}^{-1} $$
+
+The estimated asymptotic variance is:
+
+$$ 
+\hat{V}_{\hat{\beta}_{OGMM}} = n^{-1}(\tilde{G}'\tilde{S}^{-1}\tilde{G})^{-1}
+$$
+where $\tilde{u} = y  - X\hat{\beta_{OGMM}}$
+
+
+```{r OGMM}
+
+residuals_ogmm_squared <- (y - X%*%beta_ogmm)^2 %>% as.vector()
+residuals_ogmm_squared <- residuals_ogmm_squared*diag(n)
+
+residuals_ogmm_fourth <-  (y - X%*%beta_ogmm)^4 %>% as.vector()
+residuals_ogmm_fourth <- residuals_gmm_fourth*diag(n)
+
+residuals_ogmm_sixth <-  (y - X%*%beta_ogmm)^6 %>% as.vector()
+residuals_ogmm_sixth <- residuals_gmm_sixth*diag(n)
+
+S_o11 <- (t(X) %*% residuals_ogmm_squared %*% X)/n
+S_o12 <- (t(X) %*% residuals_ogmm_fourth %*% X)/n
+S_o21 <- S_o12
+S_o22 <- (t(X) %*% residuals_ogmm_sixth %*% X)/n
+S_ohat <- cbind(rbind(S_11, S_21), rbind(S_12, S_22)) %>% as.matrix()
+
+G_ohat_1 <- -(t(X) %*% X)/n 
+G_ohat_2 <-  -(t(X) %*% residuals_ogmm_squared %*% X)/n
+G_ohat <- rbind(G_ohat_1, G_ohat_2)
+
+S_star <- solve(S_ohat)
+
+V_hat_beta_hat_ogmm <- solve(t(G_ohat)%*%S_star%*%G_ohat)
+V_hat_beta_hat_ogmm
+```
