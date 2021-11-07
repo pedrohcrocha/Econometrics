@@ -1,0 +1,146 @@
+---
+title: "Problem Set 3 - Pratical Questions"
+author: "Pedro Henrique"
+date: "06/11/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+# Prep-code PS3
+library(AER)
+library(dplyr)
+library(knitr)
+
+options(scipen = 10)
+
+data("MASchools")
+df <- data.frame(MASchools$stratio,  MASchools$english, MASchools$income, MASchools$score4)
+
+x <- as.matrix(df[1:3])
+y <- as.matrix(df[4])
+n <- length(y)
+
+
+x32 = x[,3]^2
+Jn <- function(beta){
+  u<-y-x%*%beta
+  m1<-(1/n*(t(x)%*%u))
+  m2<- (1/n*t(x32)%*%u) # let's use a square term in income
+  M<-as.matrix(rbind(m1,m2))
+  return(n*t(M)%*%M)
+}
+
+#  Solve numerically
+sol<-optim(par = c(0,0,0),Jn, method = 'BFGS')
+beta_gmm<-sol$par
+beta_gmm
+
+
+#  Calculate the gradient / Jacobian (d Jn / d beta) by hand
+
+x1 = x[,1]
+x2 = x[,2]
+x3 = x[,3]
+x32 = x3^2
+
+gradient = function(beta) {
+  u<-y-x%*%beta
+  Jnb1 = (1/n)*(
+    2 * sum(x1*u) * sum(-x1*x1) +
+      2 * sum(x2*u) * sum(-x1*x2) +
+      2 * sum(x3*u) * sum(-x1*x3) +
+      2 * sum(x32*u) * sum(-x1*x32)
+  )
+  Jnb2 = (1/n)*(
+    2 * sum(x1*u) * sum(-x2*x1) +
+      2 * sum(x2*u) * sum(-x2*x2) +
+      2 * sum(x3*u) * sum(-x2*x3) +
+      2 * sum(x32*u) * sum(-x2*x32)
+  )
+  Jnb3 = (1/n)*(
+    2 * sum(x1*u) * sum(-x3*x1) +
+      2 * sum(x2*u) * sum(-x3*x2) +
+      2 * sum(x3*u) * sum(-x3*x3) +
+      2 * sum(x32*u) * sum(-x3*x32)
+  )
+  grad = c(Jnb1, Jnb2, Jnb3)
+  return(grad)
+}
+
+gradient(beta_gmm)
+#  Remember that beta_gmm was found by minmizing Jn, so the gradient here should be near zero
+```
+# Question 4
+Basically, we have to implement BGFS minimization as in question 1. So, here we go:
+First, we define the initial parameters and initial updating matrix 
+
+Second, we do the iterations:
+```{r GMM }
+B <- c(0,0,0)
+A <- diag(3)
+
+results <- data.frame(rep(0,10), rep(0,10),rep(0,10), rep(0,10), rep(0,10), rep(0,10),rep(0,10))
+colnames(results) <- c('value.obj.func', 
+                       'par.1.val', 'par.2.val', 'par.3.val',
+                       'grad.1.val', 'grad.2.val', 'grad.3.val')
+for(i in 1:10){
+  q <- gradient(B)
+  B_t_plus_1 <- B - A%*%q
+  g <- gradient(B_t_plus_1) - q
+  p <- B_t_plus_1 - B
+  h <- (as.numeric(t(p)%*%g))^(-1)*p - (as.numeric(t(g)%*%A%*%g))^(-1)*A%*%g
+  A_t_plus_1 <- A + (as.numeric(t(p)%*%g))^(-1)*p%*%t(p) - (as.numeric(t(g)%*%A%*%g))^(-1)*A%*%g%*%t(A%*%g) + as.numeric(t(g)%*%A%*%g)*h%*%t(h)
+  
+  results$value.obj.func[i] <- Jn(B_t_plus_1)
+
+  results$par.1.val[i] <- B_t_plus_1[1]
+  results$par.2.val[i] <- B_t_plus_1[2]
+  results$par.3.val[i] <- B_t_plus_1[3]
+  
+  results$grad.1.val[i] <- B_t_plus_1[1]
+  results$grad.2.val[i] <- B_t_plus_1[2]
+  results$grad.3.val[i] <- B_t_plus_1[3]
+
+  B <- B_t_plus_1
+  A <- A_t_plus_1
+}
+
+print(results)
+```
+
+# Question 5
+Now, we are going to obtain confidence intervals for the GMM parameters using bootstrap! 
+
+```{r bootstrap}
+samples <- 1000
+beta_bootstrap <- matrix(0, nrow = samples, ncol = 3)
+
+for (i in 1:samples){
+  set.seed(42 + i)
+  sample_i <- sample(1:n, size = n, replace = TRUE)
+  bootsample <- df[sample_i,]
+  
+  x <- as.matrix(bootsample[1:3])
+  y <- as.matrix(bootsample[4])
+  x32 <- x[, 3] ^ 2
+  
+  solution <- optim(B, Jn, method = 'BFGS')
+  beta_i <- solution$par
+  beta_bootstrap[i,] <- beta_i
+}
+
+CI_beta_1 <- quantile(beta_bootstrap[,1], probs = c(0.025, 0.975))
+CI_beta_1
+
+CI_beta_2 <- quantile(beta_bootstrap[,2], probs = c(0.025, 0.975))
+CI_beta_2
+
+CI_beta_3 <- quantile(beta_bootstrap[,3], probs = c(0.025, 0.975))
+CI_beta_3
+
+
+
+
+
